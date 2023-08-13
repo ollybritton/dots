@@ -1,19 +1,14 @@
 let DOTS = [];
-let DOT_SIZE = 10;
+let DOT_SIZE = 5;
 
 let curr_num = 2;
+let param = 20;
 
 class Dot {
   constructor(pos, num) {
     this.pos = pos;
 
     this.num = num;
-    this.factors = primeFactors(num);
-    this.isPrime =
-      Object.values(this.factors).length == 1 &&
-      Object.values(this.factors)[0] == 1;
-
-    console.log(num, this.isPrime);
 
     this.dir = createVector(0, 0);
   }
@@ -38,33 +33,10 @@ class Dot {
 
       let component = friendDir;
 
-      if (this.isPrime && friend.isPrime) {
-        // Arrange primes into a sort of lattice
-
-        if (friendDist <= 100) {
-          component.mult(-2);
-        } else {
-          component.mult(1 / pow(friendDist, 1));
-        }
+      if (friendDist < 25) {
+        component.mult(-0.2);
       } else {
-        // Have non primes attracted to primes based on their prime factors
-        if (this.factors[friend.num] == undefined) {
-          if (friend.isPrime) {
-            component.mult(-2);
-          } else {
-            if (friendDist <= 10) {
-              component.mult(-2);
-            } else {
-              component.mult(0);
-            }
-          }
-        } else {
-          if (friendDist <= 20) {
-            component.mult(-2);
-          } else {
-            component.mult(friend.num);
-          }
-        }
+        component.mult(1);
       }
 
       this.dir.add(component);
@@ -76,21 +48,11 @@ class Dot {
   }
 
   draw() {
-    let speed = this.dir.mag();
+    let speed = log(this.dir.mag());
 
-    if (this.isPrime) {
-      fill(color(255 / speed, 255, 255 / speed));
-    } else {
-      fill(color(255 / speed, 255 / speed, 255));
-    }
+    fill(color(255 / speed, 255 / speed, 255));
 
-    if (this.isPrime) {
-      textSize(DOT_SIZE * 2);
-    } else {
-      textSize(DOT_SIZE);
-    }
-
-    text(this.num, this.pos.x, this.pos.y);
+    ellipse(this.pos.x, this.pos.y, DOT_SIZE);
   }
 }
 
@@ -119,10 +81,17 @@ function primeFactors(n) {
 function setup() {
   createCanvas(windowWidth, windowHeight);
   frameRate(120);
+
+  // setInterval(() => {
+  //   var pos = createVector(Math.random() * width, Math.random() * height);
+
+  //   DOTS.push(new Dot(pos, curr_num));
+  //   curr_num += 1;
+  // }, 200);
 }
 
 function draw() {
-  background(0, 100);
+  background(0, 20);
   noStroke();
 
   for (let dot of DOTS) {
